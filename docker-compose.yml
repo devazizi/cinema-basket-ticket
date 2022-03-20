@@ -1,0 +1,26 @@
+version: '3'
+
+networks:
+  notification:
+    driver: bridge
+
+  web:
+    driver: bridge
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx_web_server
+    ports: ['8001:80']
+    volumes:
+      - ./devops/nginx/conf:/etc/nginx/conf.d
+      - /volumes/nginx/logs:/var/log/nginx
+
+  rabbitmq_notification_broker:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq_notification_broker
+    ports: ["5672:5672", "15672:15672"]
+    volumes:
+      - ./volumes/rabbitmq/data/:/var/lib/rabbitmq/
+      - ./volumes/rabbitmq/log/:/var/log/rabbitmq
+    networks: ['notification']
