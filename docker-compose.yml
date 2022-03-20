@@ -20,9 +20,9 @@ services:
     container_name: kong_api_gateway
     env_file: .env.kong
     restart: always
-#    command: "kong migrations bootstrap"
-#    volumes:
-#      - ./devops/kong/config:/etc/kong
+    # command: "kong migrations bootstrap"
+    #    volumes:
+    #      - ./devops/kong/config:/etc/kong
     networks:
       - bucket_cinema_ticket
     ports:
@@ -34,20 +34,21 @@ services:
       - 8445:8445
       - 8003:8003
       - 8004:8004
-#  nginx:
-#    image: nginx:latest
-#    container_name: nginx_web_server
-#    ports: [ '8001:80' ]
-#    volumes:
-#      - ./devops/nginx/conf:/etc/nginx/conf.d
-#      - /volumes/nginx/logs:/var/log/nginx
-#    networks: [ 'bucket_cinema_ticket' ]
-#
-#  rabbitmq_notification_broker:
-#    image: rabbitmq:3-management-alpine
-#    container_name: rabbitmq_notification_broker
-#    ports: [ "5672:5672", "15672:15672" ]
-#    volumes:
-#      - ./volumes/rabbitmq/data/:/var/lib/rabbitmq/
-#      # - ./volumes/rabbitmq/log/:/var/log/rabbitmq
-#    networks: [ 'bucket_cinema_ticket' ]
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_web_server
+    ports: [ '8088:80', '9000:9000' ]
+    volumes:
+      - ./devops/nginx/conf:/etc/nginx/conf.d
+      - ./volumes/nginx/logs:/var/log/nginx
+    networks: [ 'bucket_cinema_ticket' ]
+
+  rabbitmq_notification_broker:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq_notification_broker
+    ports: [ "5672:5672", "15672:15672" ]
+    volumes:
+      - ./volumes/rabbitmq/data/:/var/lib/rabbitmq/
+      # - ./volumes/rabbitmq/log/:/var/log/rabbitmq
+    networks: [ 'bucket_cinema_ticket' ]
