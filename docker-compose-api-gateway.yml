@@ -11,14 +11,14 @@ services:
     container_name: postgres_db
     networks:
       - bucket_cinema_ticket
-    env_file: .env.db_postgres
+    env_file: ./devops/environments/.env.db_postgres
     ports:
       - '5432:5432'
 
   kong_api_gateway:
     image: kong/kong-gateway:2.8.0.0-alpine
     container_name: kong_api_gateway
-    env_file: .env.kong
+    env_file: ./devops/environments/.env.kong
     restart: always
     # command: "kong migrations bootstrap"
     #    volumes:
@@ -52,3 +52,38 @@ services:
       - ./volumes/rabbitmq/data/:/var/lib/rabbitmq/
       # - ./volumes/rabbitmq/log/:/var/log/rabbitmq
     networks: [ 'bucket_cinema_ticket' ]
+
+  mysql:
+    image: mysql:8.5
+    container_name: mysql_db06
+    ports:
+      - "3306:3306"
+    env_file: ./devops/environments/.env.mysql
+    networks: [ 'bucket_cinema_ticket' ]
+
+  phpmyadmin:
+    image: phpmyadmin:phpmyadmin:latest
+    container_name: phpmyadmin
+    ports: []
+    networks: [ 'bucket_cinema_ticket' ]
+    env_file: ./devops/environments/.env.phpmyadmin
+
+  # application services as container
+  admin_service:
+    container_name: admin_service
+    build:
+      context: ./admin-service/
+      dockerfile: ./admin-service/Dockerfile
+    ports: ['9000:9000']
+    networks: ['bucket_cinema_ticket']
+    env_file:
+      - ./devops/environments/.env.admin_service
+    volumes:
+    - ./admin-service:./var/www/html/
+
+  admin_ui_service:
+      container_name: admin_ui_service
+#      ports:
+      networks:
+        - bucket_cinema_ticket
+        -
